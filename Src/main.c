@@ -112,7 +112,6 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 	  HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
-	 // Uart_printf("a=%d\n", a);
 	  getCcs811();
 	  getHdc1080();
 	  HAL_Delay(1100);
