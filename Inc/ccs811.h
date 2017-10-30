@@ -9,6 +9,7 @@
 #define RST_HIGH	HAL_GPIO_WritePin(GPIOB, RST_Pin, GPIO_PIN_SET)
 #define WAK_LOW		HAL_GPIO_WritePin(WAK_GPIO_Port, WAK_Pin, GPIO_PIN_RESET)
 
+extern uint8_t gasValue[];
 
 void ccs811Init();
 void getCcs811();

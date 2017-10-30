@@ -16,6 +16,8 @@
 #define Configuration_1 0x1000 // Heater disabled, Temperature and Humidity are acquired in sequence, Temperature first.,  14-bit  resolution
 #define Configuration_2 0x3000 // Heater enabled, Temperature and Humidity are acquired in sequence, Temperature first.,  14-bit  resolution
 
+uint8_t tempAndHumi[4];
+
 void HDC1080_Init()
 {
 	unsigned int data1, data2;
@@ -53,7 +55,7 @@ void HDC1080_Init()
 	//SysTickDelay_ms(2000);
 	osDelay(2000);
 }
-
+/*
 void Convert_HDC1080_TempHumidity(unsigned char *datax)
 {
 	//100 times of the actural value
@@ -67,8 +69,11 @@ void Convert_HDC1080_TempHumidity(unsigned char *datax)
 	humidity = (unsigned long)(datax[2] << 8);
 	humidity += datax[3];
 	humidity = (humidity * 100) >> 16;
+
+
 	Uart_printf("humidity = %d RH\n", humidity);
 }
+*/
 
 void HDC1080_Read_Temper(void)
 {
@@ -80,6 +85,10 @@ void HDC1080_Read_Temper(void)
 	temp += buffer[1];
 	temp = (temp * 16500) >> 16;
 	temp -= 4000;
+
+	tempAndHumi[0] = temp >> 8;
+	tempAndHumi[1] = temp & 0xff;
+
 	Uart_printf("temp = %d C\n", temp);
 }
 
@@ -91,6 +100,10 @@ void HDC1080_Read_Humidi(void)
 	humidity = (uint16_t)(buffer[0] << 8);
 	humidity += buffer[1];
 	humidity = (humidity * 100) >> 16;
+
+	tempAndHumi[2] = humidity >> 8;
+	tempAndHumi[3] = humidity & 0xff;
+
 	Uart_printf("humidity = %d RH\n", humidity);
 }
 

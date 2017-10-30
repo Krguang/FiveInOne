@@ -24,7 +24,7 @@
 #define INTERRUPT_DRIVEN 0x8
 #define THRESHOLDS_ENABLED 0x4
 
-
+uint8_t gasValue[4];
 uint8_t BUF[12];
 uint8_t Information[10];
 uint8_t temp = 0;
@@ -79,11 +79,16 @@ void getCcs811() {
 	if (Error_ID!=0x00)
 	{
 		ccs811Init();
+		return;
 	}
 	Single_ReadI2C(CCS811_Add, 0x02, BUF, 8);
 
 	CCS.eco2 = (uint16_t)BUF[0] * 256 + BUF[1];
 	CCS.tvoc = (uint16_t)BUF[2] * 256 + BUF[3];
+	for (uint8_t i = 0; i < 4; i++)
+	{
+		gasValue[i] = BUF[i];
+	}
 
 	Uart_printf("eco2=%d\n", CCS.eco2);
 	Uart_printf("tvoc=%d\n", CCS.tvoc);

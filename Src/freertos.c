@@ -57,6 +57,9 @@
 #include "myPrintf.h"
 #include "ccs811.h"
 #include "hdc1080.h"
+#include "usart.h"
+#include "dataProcessing.h"
+
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -144,9 +147,15 @@ void StartGetDataTask(void const * argument) {
 	for (;;)
 	{
 		osDelay(500);
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 		getCcs811();
 		getHdc1080();
+		dataProcessing();
+		for (uint8_t i = 0; i < 10; i++)
+		{
+			Uart_printf("%x  ", localArray[i]);
+		}
+		Uart_printf("\n");
 	}
 }
 
@@ -154,6 +163,7 @@ void StartModbusTask(void const * argument) {
 	for (;;)
 	{
 		osDelay(100);
+		
 	}
 }
 
