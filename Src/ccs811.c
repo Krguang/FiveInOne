@@ -1,6 +1,7 @@
 #include "ccs811.h"
 #include "IIC.h"
 #include "myPrintf.h"
+#include "cmsis_os.h"
 
 #define CCS811_Add  0x5A<<1
 #define STATUS_REG 0x00
@@ -40,24 +41,24 @@ ccs811_measurement_t CCS;
 
 void ccs811Reset() {
 	RST_HIGH;
-	HAL_Delay(1);
+	osDelay(1);
 	RST_LOW;
-	HAL_Delay(10);
+	osDelay(10);
 	RST_HIGH;
-	HAL_Delay(100);
+	osDelay(100);
 }
 
 void ccs811Init() {
 	ADD_LOW;
 	WAK_LOW;
-	HAL_Delay(10);
+	osDelay(10);
 	ccs811Reset();
 	
 	Single_ReadI2C(CCS811_Add, 0x00, &Status, 1);	   //Firstly the status register is read and the APP_VALID flag is checked.
 	Uart_printf("Status=%x\n", Status);
 	if (Status & 0x10) {
 		Single_MWriteI2C_byte(CCS811_Add, 0xF4, &temp, 0);
-		HAL_Delay(100);
+		osDelay(100);
 	}
 	
 	Single_ReadI2C(CCS811_Add, 0x00, &Status, 1);
@@ -65,7 +66,7 @@ void ccs811Init() {
 	Single_ReadI2C(CCS811_Add, 0x01, &MeasureMode, 1);
 	Uart_printf("MeasureMode=%x\n", Status);
 	Single_WriteI2C_byte(CCS811_Add, 0x01, 0x10);
-	HAL_Delay(3000);
+	osDelay(3000);
 }
 
 void getCcs811() {

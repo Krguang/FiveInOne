@@ -1,5 +1,6 @@
 #include "IIC.h"
 #include "myPrintf.h"
+#include "cmsis_os.h"
 
 #define HDC1080_I2C_ADDR 0x80 //0x40 << 1
 
@@ -40,7 +41,7 @@ void HDC1080_Init()
 	Single_WriteI2C_byte(HDC1080_I2C_ADDR, Configuration, data1);
 	//I2C_Write_HDC1080(HDC1080_I2C_ADDR, Configuration, data1);
 	//wait  at least  20ms  to readout  temp&humidity  value
-	HAL_Delay(30);
+	osDelay(30);
 	Uart_printf("I2C_Write_HDC1080 register 0x02 = %x\n", data1);
 
 	Single_ReadI2C(HDC1080_I2C_ADDR, Configuration, datax, 2);
@@ -50,7 +51,7 @@ void HDC1080_Init()
 
 	Uart_printf("I2C_Read_HDC1080 register 0x02 = %x\n", data1);
 	//SysTickDelay_ms(2000);
-	HAL_Delay(2000);
+	osDelay(2000);
 }
 
 void Convert_HDC1080_TempHumidity(unsigned char *datax)

@@ -1,8 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : gpio.c
-  * Description        : This file provides code for the configuration
-  *                      of all used GPIO pins.
+  * File Name          : freertos.c
+  * Description        : Code for freertos applications
   ******************************************************************************
   * This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -48,80 +47,116 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gpio.h"
-/* USER CODE BEGIN 0 */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "cmsis_os.h"
 
-/* USER CODE END 0 */
+/* USER CODE BEGIN Includes */     
+#include "stm32f1xx_hal.h"
+#include "cmsis_os.h"
+#include "myPrintf.h"
+#include "ccs811.h"
+#include "hdc1080.h"
+/* USER CODE END Includes */
 
-/*----------------------------------------------------------------------------*/
-/* Configure GPIO                                                             */
-/*----------------------------------------------------------------------------*/
-/* USER CODE BEGIN 1 */
+/* Variables -----------------------------------------------------------------*/
+osThreadId initTaskHandle;
 
-/* USER CODE END 1 */
+/* USER CODE BEGIN Variables */
 
-/** Configure pins as 
-        * Analog 
-        * Input 
-        * Output
-        * EVENT_OUT
-        * EXTI
-*/
-void MX_GPIO_Init(void)
-{
+osThreadId getDataTaskHandle;
+osThreadId modbusTaskHandle;
+/* USER CODE END Variables */
 
-  GPIO_InitTypeDef GPIO_InitStruct;
+/* Function prototypes -------------------------------------------------------*/
+void StartInitTask(void const * argument);
 
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED_Pin|ADD_Pin, GPIO_PIN_RESET);
+/* USER CODE BEGIN FunctionPrototypes */
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, RST_Pin|SCL_Pin|SDA_Pin, GPIO_PIN_SET);
+void StartGetDataTask(void const * argument);
+void StartModbusTask(void const * argument);
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(WAK_GPIO_Port, WAK_Pin, GPIO_PIN_RESET);
+/* USER CODE END FunctionPrototypes */
 
-  /*Configure GPIO pins : PAPin PAPin */
-  GPIO_InitStruct.Pin = LED_Pin|ADD_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+/* Hook prototypes */
 
-  /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = RST_Pin|WAK_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+/* Init FreeRTOS */
 
-  /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = INT_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(INT_GPIO_Port, &GPIO_InitStruct);
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+       
+  /* USER CODE END Init */
 
-  /*Configure GPIO pins : PBPin PBPin */
-  GPIO_InitStruct.Pin = SCL_Pin|SDA_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
 
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* Create the thread(s) */
+  /* definition and creation of initTask */
+  osThreadDef(initTask, StartInitTask, osPriorityNormal, 0, 128);
+  initTaskHandle = osThreadCreate(osThread(initTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  
+
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
 }
 
-/* USER CODE BEGIN 2 */
+/* StartInitTask function */
+void StartInitTask(void const * argument)
+{
 
-/* USER CODE END 2 */
+  /* USER CODE BEGIN StartInitTask */
+  /* Infinite loop */
+  
+	ccs811Init();
+	HDC1080_Init();
 
-/**
-  * @}
-  */
+	osThreadDef(getDataTask, StartGetDataTask, osPriorityNormal, 0, 128);
+	getDataTaskHandle = osThreadCreate(osThread(getDataTask), NULL);
 
-/**
-  * @}
-  */
+	osThreadDef(modbusTask, StartModbusTask, osPriorityNormal, 0, 128);
+	modbusTaskHandle = osThreadCreate(osThread(modbusTask), NULL);
+
+	osThreadTerminate(initTaskHandle);
+
+  /* USER CODE END StartInitTask */
+}
+
+/* USER CODE BEGIN Application */
+     
+void StartGetDataTask(void const * argument) {
+	for (;;)
+	{
+		osDelay(500);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+		getCcs811();
+		getHdc1080();
+	}
+}
+
+void StartModbusTask(void const * argument) {
+	for (;;)
+	{
+		osDelay(100);
+	}
+}
+
+/* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

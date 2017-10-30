@@ -1,5 +1,6 @@
 #include "IIC.h"
 #include "usart.h"
+#include "cmsis_os.h"
 
 void delay_1us(uint8_t x)//粗略延时,iic_40K
 {
@@ -238,7 +239,7 @@ uint8_t Single_MReadI2C(uint8_t Slave_Address, uint8_t REG_Address, uint8_t *REG
 			break;
 		}
 	}
-	HAL_Delay(10);
+	osDelay(10);
 
 	if (I2C_Start() == 0)  //起始信号
 	{

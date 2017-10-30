@@ -619,6 +619,9 @@
 #ifndef __GCC_ATOMIC_INT_LOCK_FREE
 #define __GCC_ATOMIC_INT_LOCK_FREE 2
 #endif
+#ifndef USE_FREERTOS
+#define USE_FREERTOS 1
+#endif
 #ifndef __FLOAT_WORD_ORDER__
 #define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__
 #endif
@@ -1175,6 +1178,9 @@
 
 // --- Include directories begin --- //
 //.
+//$(BSP_ROOT)/FreeRTOS/Source/CMSIS_RTOS
+//$(BSP_ROOT)/FreeRTOS/Source/include
+//$(BSP_ROOT)/FreeRTOS/Source/Portable/gcc/ARM_CM3
 //$(BSP_ROOT)/STM32F1xxxx/STM32F1xx_HAL_Driver/Inc
 //$(BSP_ROOT)/STM32F1xxxx/STM32F1xx_HAL_Driver/Inc/Legacy
 //$(BSP_ROOT)/STM32F1xxxx/CMSIS_HAL/Device/ST/STM32F1xx/Include
