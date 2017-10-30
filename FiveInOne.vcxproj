@@ -85,6 +85,7 @@
     <ClCompile Include="Src\hdc1080.c" />
     <ClCompile Include="Src\IIC.c" />
     <ClCompile Include="Src\main.c" />
+    <ClCompile Include="Src\modbusToPC.c" />
     <ClCompile Include="Src\myPrintf.c" />
     <ClCompile Include="Src\stm32f1xx_hal_msp.c" />
     <ClCompile Include="Src\stm32f1xx_it.c" />
@@ -143,6 +144,7 @@
     <ClInclude Include="Inc\hdc1080.h" />
     <ClInclude Include="Inc\IIC.h" />
     <ClInclude Include="Inc\main.h" />
+    <ClInclude Include="Inc\modbusToPC.h" />
     <ClInclude Include="Inc\myPrintf.h" />
     <ClInclude Include="Inc\stm32f1xx_hal_conf.h" />
     <ClInclude Include="Inc\stm32f1xx_it.h" />

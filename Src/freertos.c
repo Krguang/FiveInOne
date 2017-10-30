@@ -59,7 +59,7 @@
 #include "hdc1080.h"
 #include "usart.h"
 #include "dataProcessing.h"
-
+#include "modbusToPC.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -151,19 +151,14 @@ void StartGetDataTask(void const * argument) {
 		getCcs811();
 		getHdc1080();
 		dataProcessing();
-		for (uint8_t i = 0; i < 10; i++)
-		{
-			Uart_printf("%x  ", localArray[i]);
-		}
-		Uart_printf("\n");
 	}
 }
 
 void StartModbusTask(void const * argument) {
 	for (;;)
 	{
-		osDelay(100);
-		
+		osDelay(10);
+		modbusSlave();
 	}
 }
 

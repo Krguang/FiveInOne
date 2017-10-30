@@ -9,9 +9,9 @@ uint8_t localArray[10];
 
 
 void getPM25() {
-	if (ReceiveState)
+	if (Usart2ReceiveState)
 	{
-		ReceiveState = 0;
+		Usart2ReceiveState = 0;
 		for (size_t i = 0; i < Usart2ReceiveBuffer.BufferLen; i++)
 		{
 			if (Usart2ReceiveBuffer.BufferArray[0]!=0x42|| Usart2ReceiveBuffer.BufferArray[1] != 0x4d)

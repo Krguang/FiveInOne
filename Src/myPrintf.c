@@ -1,13 +1,13 @@
 #include <stdarg.h>   
 #include "usart.h"
 
-#define __DEBUG__
+//#define __DEBUG__
 
 /*
 * 将整形数字转换成字符，如 0 转换成 '0'
 */
 
-char number2char(int num)
+static char number2char(int num)
 {
 	char ch;
 
@@ -40,7 +40,7 @@ char number2char(int num)
 /*
 * 将整数 ch 按照十进制/十六进制转换成字符
 */
-char * convert_func(char *str, unsigned int ch, int num)
+static char * convert_func(char *str, unsigned int ch, int num)
 {
 	char *pstr = str;
 	int ww,qw,bw, sw, gw;
@@ -107,7 +107,7 @@ char * convert_func(char *str, unsigned int ch, int num)
 }
 
 
-int my_vsprintf(char *buf, const char *fmt, va_list args)
+static int my_vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int i;
 	char * str;
@@ -166,7 +166,7 @@ int my_vsprintf(char *buf, const char *fmt, va_list args)
 	return str - buf;
 }
 
-void sendstring(unsigned char *string)
+static void sendstring(unsigned char *string)
 {
 	while (*string)
 	{

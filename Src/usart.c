@@ -54,11 +54,12 @@
 
 /* USER CODE BEGIN 0 */
 
-struct buffer Usart2ReceiveBuffer;
+struct buffer Usart1ReceiveBuffer,Usart2ReceiveBuffer;
 
-uint8_t Usart2rdata[1];
 
-volatile uint8_t ReceiveState = 0;
+
+volatile uint8_t Usart1ReceiveState = 0;
+volatile uint8_t Usart2ReceiveState = 0;
 
 /* USER CODE END 0 */
 
@@ -71,7 +72,7 @@ void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 19200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -130,8 +131,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    /* USART1 interrupt Init */
+    HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
-
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+	__HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
   /* USER CODE END USART1_MspInit 1 */
   }
   else if(uartHandle->Instance==USART2)
@@ -183,6 +188,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_9|GPIO_PIN_10);
 
+    /* USART1 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspDeInit 1 */
 
   /* USER CODE END USART1_MspDeInit 1 */
@@ -211,6 +218,26 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 
+void USART1_IRQHandler(void)
+{
+	uint8_t Clear = Clear;
+
+
+	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET)
+	{
+		Usart1ReceiveBuffer.BufferArray[Usart1ReceiveBuffer.BufferLen++] = huart1.Instance->DR;
+	}
+
+	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE) != RESET)
+	{
+		Clear = huart1.Instance->SR;
+		Clear = huart1.Instance->DR;
+		Usart1ReceiveState = 1;
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+	}
+
+}
+
 void USART2_IRQHandler(void)
 {
 	uint8_t Clear = Clear;
@@ -225,8 +252,8 @@ void USART2_IRQHandler(void)
 	{
 		Clear = huart2.Instance->SR;
 		Clear = huart2.Instance->DR;
-		ReceiveState = 1;
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+		Usart2ReceiveState = 1;
+		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
 	}
 
 }
