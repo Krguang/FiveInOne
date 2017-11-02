@@ -11,15 +11,19 @@ uint8_t localArray[10];
 void getPM25() {
 	if (Usart2ReceiveState)
 	{
+		uint16_t temp = 0;
+		uint8_t lengthTemp = 0;
+		lengthTemp = Usart2ReceiveBuffer.BufferLen;
+
 		Usart2ReceiveState = 0;
-		for (size_t i = 0; i < Usart2ReceiveBuffer.BufferLen; i++)
+		Usart2ReceiveBuffer.BufferLen = 0;
+		for (size_t i = 0; i < lengthTemp; i++)
 		{
 			if (Usart2ReceiveBuffer.BufferArray[0]!=0x42|| Usart2ReceiveBuffer.BufferArray[1] != 0x4d)
 			{
 				return;
 			}
-			uint16_t temp = 0;
-
+			
 			for (uint8_t i = 0; i < 22; i++)
 			{
 				temp = temp + Usart2ReceiveBuffer.BufferArray[i];
@@ -31,7 +35,7 @@ void getPM25() {
 			localArray[0] = Usart2ReceiveBuffer.BufferArray[12];
 			localArray[1] = Usart2ReceiveBuffer.BufferArray[13];
 		}
-		Usart2ReceiveBuffer.BufferLen = 0;
+		
 	}
 }
 
