@@ -84,7 +84,7 @@ void HDC1080_Read_Temper(void)
 	temp = (uint16_t)(buffer[0] << 8);
 	temp += buffer[1];
 	temp = (temp * 16500) >> 16;
-	temp -= 4000;
+	temp -= 4200;//初始值为4000，因为其他器件发热的问题会导致温度偏高，所以多减2℃
 
 	tempAndHumi[0] = temp >> 8;
 	tempAndHumi[1] = temp & 0xff;
